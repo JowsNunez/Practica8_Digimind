@@ -192,11 +192,15 @@
 
                 />
 
-            <EditText
-                android:id="@+id/time"
-                android:layout_width="match_parent"
+            <Button
+                android:id="@+id/btn_time"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:inputType="text" />
+                android:background="?android:attr/selectableItemBackground"
+                android:text="Set time"
+                android:textAllCaps="false"
+                android:textColor="@color/gray"
+                android:textSize="16sp" />
 
             <Button
                 android:id="@+id/done"
