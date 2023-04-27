@@ -6,16 +6,23 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.BaseAdapter
+import android.widget.Button
 import android.widget.GridView
 import android.widget.TextView
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FirebaseFirestore
 import jose.nunez.mydigimind.R
 import jose.nunez.mydigimind.databinding.FragmentHomeBinding
 import jose.nunez.mydigimind.ui.Task
 import java.util.zip.Inflater
 
 class HomeFragment : Fragment() {
+
+    private lateinit var storage: FirebaseFirestore
+    private lateinit var usuario: FirebaseAuth
 
     private var adaptadorTareas: AdaptadorTareas? = null
     private var _binding: FragmentHomeBinding? = null
@@ -41,14 +48,64 @@ class HomeFragment : Fragment() {
         _binding = FragmentHomeBinding.inflate(inflater, container, false)
         val root: View = binding.root
         if (first) {
-            fillTasks()
+            //fillTasks()
             first = false
         }
         adaptadorTareas = AdaptadorTareas(root.context, task)
         val gridView: GridView = root.findViewById(R.id.gridview)
 
+        storage= FirebaseFirestore.getInstance()
+        usuario=FirebaseAuth.getInstance()
 
         gridView.adapter = adaptadorTareas
+
+        var txtDireccion:TextView=root.findViewById(R.id.etDireccion)
+        var txtTelefono:TextView=root.findViewById(R.id.etTelefono)
+
+
+        var txtEmail:TextView=root.findViewById(R.id.etCorreo)
+        txtEmail.text = usuario.currentUser?.email.toString()
+        var save:Button =root.findViewById(R.id.btnGuardar)
+        save.setOnClickListener {
+
+            storage.collection("usuarios").document(txtEmail.text.toString())
+                .set(
+                    hashMapOf("email" to txtEmail.text.toString(),
+                    "direccion" to txtDireccion.text.toString(),
+                    "telefono" to txtTelefono.text.toString())
+                ).addOnSuccessListener {
+                    Toast.makeText(root.context,"Se guardo con exito",Toast.LENGTH_SHORT).show()
+                }.addOnFailureListener{
+                    Toast.makeText(root.context,"Fallo al guardar",Toast.LENGTH_SHORT).show()
+                }
+        }
+        var delete:Button =root.findViewById(R.id.btnEliminar)
+
+        delete.setOnClickListener {
+            storage.collection("usuarios").document(txtEmail.text.toString()).delete().addOnSuccessListener {
+                Toast.makeText(root.context,"Se guardo con exito",Toast.LENGTH_SHORT).show()
+
+            }
+        }
+
+        var docRef=storage.collection("usuarios").document(txtEmail.text.toString())
+
+        docRef.get().addOnCompleteListener { task ->
+            if(task.isSuccessful){
+                val document = task.result
+                if(document!=null){
+                        txtDireccion.setText(document.getString("direccion"))
+                        txtTelefono.setText(document.getString("telefono"))
+                    }else{
+                        Toast.makeText(root.context,"No Se encontro",Toast.LENGTH_SHORT).show()
+
+                    }
+
+            }else{
+                Toast.makeText(root.context,"Fallo Get",Toast.LENGTH_SHORT).show()
+
+            }
+        }
 
 
         return root

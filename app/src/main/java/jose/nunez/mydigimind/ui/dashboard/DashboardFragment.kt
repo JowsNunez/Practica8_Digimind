@@ -12,14 +12,20 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FirebaseFirestore
 import jose.nunez.mydigimind.R
 import jose.nunez.mydigimind.databinding.FragmentDashboardBinding
+
 import jose.nunez.mydigimind.ui.Task
 import jose.nunez.mydigimind.ui.home.HomeFragment
 import java.text.SimpleDateFormat
 import java.util.Calendar
 
 class DashboardFragment : Fragment() {
+    private lateinit var storage: FirebaseFirestore
+
+    private lateinit var usuario: FirebaseAuth
 
     private var _binding: FragmentDashboardBinding? = null
 
@@ -40,6 +46,8 @@ class DashboardFragment : Fragment() {
 
         val btn_time: Button = root.findViewById(R.id.btn_time)
 
+        storage= FirebaseFirestore.getInstance()
+        usuario=FirebaseAuth.getInstance()
 
         btn_time.setOnClickListener {
             val cal = Calendar.getInstance()
@@ -92,9 +100,31 @@ class DashboardFragment : Fragment() {
                 days.add("Sunday")
 
 
-            var task = Task(titulo,days,tiempo)
+            val actividades = hashMapOf(
+                "actividad" to et_titulo.text.toString(),
+                "email" to usuario.currentUser?.email.toString(),
+                "lu" to checkMonday.isChecked,
+                "ma" to checkTuesday.isChecked,
+                "mi" to checkWednesday.isChecked,
+                "ju" to checkThursday.isChecked,
+                "vi" to checkFriday.isChecked,
+                "sa" to checkSaturday.isChecked,
+                "do" to checkSunday.isChecked,
+                "tiempo" to tiempo,
+            )
 
-            HomeFragment.task.add(task)
+            storage.collection("actividades")
+                .add(actividades)
+                .addOnSuccessListener {
+                    Toast .makeText(root.context,"Rask guardada con exito",Toast.LENGTH_SHORT).show()
+                    var task = Task(titulo,days,tiempo)
+
+                    HomeFragment.task.add(task)
+                }.addOnFailureListener {
+                    Toast .makeText(root.context,"Error",Toast.LENGTH_SHORT).show()
+
+                }
+
 
             Toast.makeText(root.context,"new Task added", Toast.LENGTH_SHORT).show()
 

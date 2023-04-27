@@ -13,6 +13,34 @@
         android:layout_marginBottom="20dp"
         android:src="@drawable/logobrain"/>
 
+    <EditText
+        android:id="@+id/etCorreo"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:hint="Correo"/>
+    <EditText
+        android:id="@+id/etDireccion"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:hint="Direccion"/>
+    <EditText
+        android:id="@+id/etTelefono"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:hint="Telefono"/>
+    <Button
+        android:id="@+id/btnGuardar"
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:text="Guardar"
+        android:textAllCaps="false"/>
+    <Button
+        android:id="@+id/btnEliminar"
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:text="Eliminar"
+        android:textAllCaps="false"/>
+
     <GridView
         android:id="@+id/gridview"
         android:layout_width="match_parent"
